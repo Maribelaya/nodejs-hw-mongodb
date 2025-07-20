@@ -1,32 +1,38 @@
 import express from 'express';
-import mongoose from 'mongoose';
-import dotenv from 'dotenv';
-import contactsRouter from './routes/contacts.js';
 
-dotenv.config();
+import cors from 'cors';
+import pino from 'pino';
+import pinoHttp from 'pino-http';
 
-const app = express();
-const PORT = process.env.PORT || 3000;
+import router from './routers/contacts.js';
 
-app.use(express.json());
-app.use('/contacts', contactsRouter);
+import { errorHandler } from './middlewares/errorHandler.js';
+import { notFoundHandler } from './middlewares/notFoundHandler.js';
 
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({
-    status: 500,
-    message: 'Something went wrong',
-    error: err.message,
+const logger = pino();
+export default function setupServer() {
+  const app = express();
+
+  app.use(express.json());
+
+  app.use(cors());
+  app.use(pinoHttp({ logger }));
+  const PORT = process.env.PORT || 3000;
+
+  app.use((req, res, next) => {
+    console.log({ Method: req.method });
+    next();
   });
-});
 
-mongoose
-  .connect(process.env.MONGODB_URI)
-  .then(() => {
-    console.log('Connected to MongoDB');
-    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-  })
-  .catch((error) => {
-    console.error('Mongo connection error:', error.message);
-    process.exit(1);
+  app.get('/', (req, res) => {
+    res.json({ message: 'It is response new one!!' });
   });
+
+  app.use(router);
+
+  app.use('*', notFoundHandler);
+
+  app.use(errorHandler);
+
+  app.listen(PORT, () => console.log(`Server started at port ${PORT}`));
+}
