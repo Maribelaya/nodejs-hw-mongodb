@@ -1,13 +1,13 @@
 import express from 'express';
 import {
-  getContactsController,
+  getContacts,
   getContactByIdController,
 } from '../controllers/contactsController.js';
 
 const router = express.Router();
 
-router.get('/', getContactsController);
-router.get('/:contactId', getContactByIdController);
+router.get('/', getContacts); // GET /contacts
+router.get('/:contactId', getContactByIdController); // GET /contacts/123
 
 console.log('📦 contacts route loaded');
 

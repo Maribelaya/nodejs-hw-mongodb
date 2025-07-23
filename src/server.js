@@ -1,38 +1,42 @@
 import express from 'express';
-
 import cors from 'cors';
-import pino from 'pino';
-import pinoHttp from 'pino-http';
+import pino from 'pino-http';
+import contactsRouter from './routes/contacts.js';
+import { initMongoConnection } from './db/initMongoConnection.js';
 
-import router from './routers/contacts.js';
-
-import { errorHandler } from './middlewares/errorHandler.js';
-import { notFoundHandler } from './middlewares/notFoundHandler.js';
-
-const logger = pino();
-export default function setupServer() {
+export const setupServer = async () => {
   const app = express();
-
-  app.use(express.json());
-
-  app.use(cors());
-  app.use(pinoHttp({ logger }));
   const PORT = process.env.PORT || 3000;
 
-  app.use((req, res, next) => {
-    console.log({ Method: req.method });
-    next();
+  // Middleware
+  app.use(cors());
+  app.use(pino());
+  app.use(express.json());
+
+  // Routes
+  app.use('/contacts', contactsRouter);
+
+  // 404 handler
+  app.use(/(.'*')/, (req, res) => {
+    res.status(404).json({ message: 'Not found' });
   });
 
-  app.get('/', (req, res) => {
-    res.json({ message: 'It is response new one!!' });
+  // Error handler
+  app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({
+      message: 'Something went wrong',
+      error: err.message,
+    });
   });
 
-  app.use(router);
-
-  app.use('*', notFoundHandler);
-
-  app.use(errorHandler);
-
-  app.listen(PORT, () => console.log(`Server started at port ${PORT}`));
-}
+  try {
+    await initMongoConnection();
+    app.listen(PORT, () => {
+      console.log(`✅ Server is running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error('❌ Failed to start server:', error.message);
+    process.exit(1);
+  }
+};
