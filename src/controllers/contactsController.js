@@ -7,96 +7,71 @@ import {
   deleteContact,
 } from '../services/contacts.js';
 
-// GET /contacts
-export async function getContacts(req, res, next) {
-  try {
-    const contacts = await getAllContacts();
-    res.json({ status: 200, data: contacts });
-  } catch (error) {
-    next(error);
-  }
+export async function getContacts(req, res) {
+  const contacts = await getAllContacts();
+  res.json({ status: 200, data: contacts });
 }
 
-// GET /contacts/:contactId
-export async function getContactByIdController(req, res, next) {
-  try {
-    const { contactId } = req.params;
-    const contact = await getContactById(contactId);
+export async function getContactByIdController(req, res) {
+  const { contactId } = req.params;
+  const contact = await getContactById(contactId);
 
-    if (!contact) {
-      throw createError(404, 'Contact not found');
-    }
-
-    res.json({ status: 200, data: contact });
-  } catch (error) {
-    next(error);
+  if (!contact) {
+    throw createError(404, 'Contact not found');
   }
+
+  res.json({ status: 200, data: contact });
 }
 
-// POST /contacts
-export async function createContactController(req, res, next) {
-  try {
-    const { name, phoneNumber, email, isFavourite, contactType } = req.body;
+export async function createContactController(req, res) {
+  const { name, phoneNumber, email, isFavourite, contactType } = req.body;
 
-    if (!name || !phoneNumber || !contactType) {
-      throw createError(
-        400,
-        'Missing required fields: name, phoneNumber, and contactType',
-      );
-    }
-
-    const newContact = await createContact({
-      name,
-      phoneNumber,
-      email,
-      isFavourite,
-      contactType,
-    });
-
-    res.status(201).json({
-      status: 201,
-      message: 'Successfully created a contact!',
-      data: newContact,
-    });
-  } catch (error) {
-    next(error);
+  if (!name || !phoneNumber || !contactType) {
+    throw createError(
+      400,
+      'Missing required fields: name, phoneNumber, and contactType',
+    );
   }
+
+  const newContact = await createContact({
+    name,
+    phoneNumber,
+    email,
+    isFavourite,
+    contactType,
+  });
+
+  res.status(201).json({
+    status: 201,
+    message: 'Successfully created a contact!',
+    data: newContact,
+  });
 }
 
-// PATCH /contacts/:contactId
-export async function patchContactController(req, res, next) {
-  try {
-    const { contactId } = req.params;
-    const updateData = req.body;
+export async function patchContactController(req, res) {
+  const { contactId } = req.params;
+  const updateData = req.body;
 
-    const updatedContact = await patchContact(contactId, updateData);
+  const updatedContact = await patchContact(contactId, updateData);
 
-    if (!updatedContact) {
-      throw createError(404, 'Contact not found');
-    }
-
-    res.status(200).json({
-      status: 200,
-      message: 'Successfully patched a contact!',
-      data: updatedContact,
-    });
-  } catch (error) {
-    next(error);
+  if (!updatedContact) {
+    throw createError(404, 'Contact not found');
   }
+
+  res.status(200).json({
+    status: 200,
+    message: 'Successfully patched a contact!',
+    data: updatedContact,
+  });
 }
 
-// DELETE /contacts/:contactId
-export async function deleteContactController(req, res, next) {
-  try {
-    const { contactId } = req.params;
-    const deleted = await deleteContact(contactId);
+export async function deleteContactController(req, res) {
+  const { contactId } = req.params;
+  const deleted = await deleteContact(contactId);
 
-    if (!deleted) {
-      throw createError(404, 'Contact not found');
-    }
-
-    res.status(204).send(); // No Content
-  } catch (error) {
-    next(error);
+  if (!deleted) {
+    throw createError(404, 'Contact not found');
   }
+
+  res.status(204).send();
 }

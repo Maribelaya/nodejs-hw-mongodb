@@ -10,21 +10,21 @@ export const setupServer = async () => {
   const app = express();
   const PORT = process.env.PORT || 3000;
 
-  // ✅ Middleware
+  //  Middleware
   app.use(cors());
   app.use(pino());
   app.use(express.json());
 
-  // ✅ Routes
+  // Routes
   app.use('/contacts', contactsRouter);
 
-  // ✅ 404 handler
+  //  404 handler
   app.use(notFoundHandler);
 
-  // ✅ Error handler
+  //  Error handler
   app.use(errorHandler);
 
-  // ✅ Запуск сервера
+  //  Запуск сервера
   try {
     await initMongoConnection();
     app.listen(PORT, () => {
