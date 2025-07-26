@@ -18,6 +18,10 @@ export const setupServer = async () => {
   // Routes
   app.use('/contacts', contactsRouter);
 
+  app.get('/', (req, res) => {
+    res.send('API is running. Use /contacts');
+  });
+
   //  404 handler
   app.use(notFoundHandler);
 
