@@ -7,80 +7,99 @@ import {
   deleteContact,
 } from '../services/contacts.js';
 
-export async function getContacts(req, res) {
-  const contacts = await getAllContacts();
-  res.json({
-    status: 200,
-    message: 'Successfully patched a contact!',
-    data: contacts,
-  });
+export async function getContacts(req, res, next) {
+  try {
+    const contacts = await getAllContacts();
+    res.status(200).json({
+      status: 200,
+      message: 'Successfully fetched all contacts!',
+      data: contacts,
+    });
+  } catch (error) {
+    next(error);
+  }
 }
 
-export async function getContactByIdController(req, res) {
-  const { contactId } = req.params;
-  const contact = await getContactById(contactId);
+export async function getContactByIdController(req, res, next) {
+  try {
+    const { contactId } = req.params;
+    const contact = await getContactById(contactId);
 
-  if (!contact) {
-    //throw createError(404, 'Contact not found');
-    res.status(404).send('Contact not found');
+    if (!contact) {
+      return next(createError(404, 'Contact not found'));
+    }
+
+    res.status(200).json({
+      status: 200,
+      message: 'Successfully fetched a contact!',
+      data: contact,
+    });
+  } catch (error) {
+    next(error);
   }
-
-  res.json({
-    status: 200,
-    message: 'Successfully patched a contact!',
-    data: contact,
-  });
 }
 
-export async function createContactController(req, res) {
-  const { name, phoneNumber, email, isFavourite, contactType } = req.body;
+export async function createContactController(req, res, next) {
+  try {
+    const { name, phoneNumber, email, isFavourite, contactType } = req.body;
 
-  if (!name || !phoneNumber || !contactType) {
-    throw createError(
-      400,
-      'Missing required fields: name, phoneNumber, and contactType',
-    );
+    if (!name || !phoneNumber || !contactType) {
+      throw createError(
+        400,
+        'Missing required fields: name, phoneNumber, and contactType',
+      );
+    }
+
+    const newContact = await createContact({
+      name,
+      phoneNumber,
+      email,
+      isFavourite,
+      contactType,
+    });
+
+    res.status(201).json({
+      status: 201,
+      message: 'Successfully created a contact!',
+      data: newContact,
+    });
+  } catch (error) {
+    next(error);
   }
-
-  const newContact = await createContact({
-    name: name,
-    phoneNumber: phoneNumber,
-    email: email,
-    isFavourite: isFavourite,
-    contactType: contactType,
-  });
-
-  res.status(201).json({
-    status: 201,
-    message: 'Successfully created a contact!',
-    data: newContact,
-  });
 }
 
-export async function patchContactController(req, res) {
-  const { contactId } = req.params;
-  const updateData = req.body;
+export async function patchContactController(req, res, next) {
+  try {
+    const { contactId } = req.params;
+    const updateData = req.body;
 
-  const updatedContact = await patchContact(contactId, updateData);
+    const updatedContact = await patchContact(contactId, updateData);
 
-  if (!updatedContact) {
-    throw createError(404, 'Contact not found');
+    if (!updatedContact) {
+      return next(createError(404, 'Contact not found'));
+    }
+
+    res.status(200).json({
+      status: 200,
+      message: 'Successfully updated a contact!',
+      data: updatedContact,
+    });
+  } catch (error) {
+    next(error);
   }
-
-  res.status(200).json({
-    status: 200,
-    message: 'Successfully patched a contact!',
-    data: updatedContact,
-  });
 }
 
-export async function deleteContactController(req, res) {
-  const { contactId } = req.params;
-  const deleted = await deleteContact(contactId);
+export async function deleteContactController(req, res, next) {
+  try {
+    const { contactId } = req.params;
+    const deleted = await deleteContact(contactId);
 
-  if (!deleted) {
-    throw createError(404, 'Contact not found');
+    if (!deleted) {
+      return next(createError(404, 'Contact not found'));
+    }
+
+    res.status(204).send();
+  } catch (error) {
+    next(error);
   }
-
-  res.status(204).send();
 }
