@@ -9,7 +9,11 @@ import {
 
 export async function getContacts(req, res) {
   const contacts = await getAllContacts();
-  res.json({ status: 200, data: contacts });
+  res.json({
+    status: 200,
+    message: 'Successfully patched a contact!',
+    data: contacts,
+  });
 }
 
 export async function getContactByIdController(req, res) {
@@ -17,10 +21,15 @@ export async function getContactByIdController(req, res) {
   const contact = await getContactById(contactId);
 
   if (!contact) {
-    throw createError(404, 'Contact not found');
+    //throw createError(404, 'Contact not found');
+    res.status(404).send('Contact not found');
   }
 
-  res.json({ status: 200, data: contact });
+  res.json({
+    status: 200,
+    message: 'Successfully patched a contact!',
+    data: contact,
+  });
 }
 
 export async function createContactController(req, res) {
@@ -34,11 +43,11 @@ export async function createContactController(req, res) {
   }
 
   const newContact = await createContact({
-    name,
-    phoneNumber,
-    email,
-    isFavourite,
-    contactType,
+    name: name,
+    phoneNumber: phoneNumber,
+    email: email,
+    isFavourite: isFavourite,
+    contactType: contactType,
   });
 
   res.status(201).json({
