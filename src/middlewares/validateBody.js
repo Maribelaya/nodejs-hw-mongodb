@@ -7,9 +7,18 @@ export const validateBody = (schema) => async (req, res, next) => {
     });
     next();
   } catch (err) {
-    const error = createHttpError(400, 'Bad Request', {
-      errors: err.details, // Joi формує масив деталей
-    });
-    next(error);
+    if (err.isJoi && err.details) {
+      const details = err.details.map((detail) => ({
+        field: detail.context?.label || detail.path.join('.'),
+        message: detail.message,
+      }));
+
+      const error = createHttpError(400, 'Bad Request', {
+        errors: details, // масив деталей
+      });
+
+      next(error);
+    }
+    next(createHttpError(500, 'Internal Server Error'));
   }
 };

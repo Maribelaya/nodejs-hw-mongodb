@@ -11,17 +11,10 @@ import { parseSortParams } from '../utils/parseSortParams.js';
 
 export async function getContacts(req, res, next) {
   try {
-    // Валідація та парсинг query параметрів
     const { page, perPage } = parsePaginationParams(req.query);
     const { sortBy, sortOrder } = parseSortParams(req.query);
 
-    // Передаємо параметри в сервіс
-    const contacts = await getAllContacts({
-      page,
-      perPage,
-      sortBy,
-      sortOrder,
-    });
+    const contacts = await getAllContacts({ page, perPage, sortBy, sortOrder });
 
     res.status(200).json({
       status: 200,
@@ -54,22 +47,7 @@ export async function getContactByIdController(req, res, next) {
 
 export async function createContactController(req, res, next) {
   try {
-    const { name, phoneNumber, email, isFavourite, contactType } = req.body;
-
-    if (!name || !phoneNumber || !contactType) {
-      throw createError(
-        400,
-        'Missing required fields: name, phoneNumber, and contactType',
-      );
-    }
-
-    const newContact = await createContact({
-      name,
-      phoneNumber,
-      email,
-      isFavourite,
-      contactType,
-    });
+    const newContact = await createContact(req.body);
 
     res.status(201).json({
       status: 201,
@@ -84,9 +62,7 @@ export async function createContactController(req, res, next) {
 export async function patchContactController(req, res, next) {
   try {
     const { contactId } = req.params;
-    const updateData = req.body;
-
-    const updatedContact = await patchContact(contactId, updateData);
+    const updatedContact = await patchContact(contactId, req.body);
 
     if (!updatedContact) {
       return next(createError(404, 'Contact not found'));
