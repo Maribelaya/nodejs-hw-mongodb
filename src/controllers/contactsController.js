@@ -13,8 +13,15 @@ export async function getContacts(req, res, next) {
   try {
     const { page, perPage } = parsePaginationParams(req.query);
     const { sortBy, sortOrder } = parseSortParams(req.query);
+    const userId = req.user._id;
 
-    const contacts = await getAllContacts({ page, perPage, sortBy, sortOrder });
+    const contacts = await getAllContacts({
+      page,
+      perPage,
+      sortBy,
+      sortOrder,
+      userId,
+    });
 
     res.status(200).json({
       status: 200,
@@ -29,7 +36,9 @@ export async function getContacts(req, res, next) {
 export async function getContactByIdController(req, res, next) {
   try {
     const { contactId } = req.params;
-    const contact = await getContactById(contactId);
+    const userId = req.user._id;
+
+    const contact = await getContactById(contactId, userId);
 
     if (!contact) {
       return next(createError(404, 'Contact not found'));
@@ -47,7 +56,8 @@ export async function getContactByIdController(req, res, next) {
 
 export async function createContactController(req, res, next) {
   try {
-    const newContact = await createContact(req.body);
+    const userId = req.user._id;
+    const newContact = await createContact({ ...req.body, userId });
 
     res.status(201).json({
       status: 201,
@@ -62,7 +72,9 @@ export async function createContactController(req, res, next) {
 export async function patchContactController(req, res, next) {
   try {
     const { contactId } = req.params;
-    const updatedContact = await patchContact(contactId, req.body);
+    const userId = req.user._id;
+
+    const updatedContact = await patchContact(contactId, req.body, userId);
 
     if (!updatedContact) {
       return next(createError(404, 'Contact not found'));
@@ -81,13 +93,15 @@ export async function patchContactController(req, res, next) {
 export async function deleteContactController(req, res, next) {
   try {
     const { contactId } = req.params;
-    const deleted = await deleteContact(contactId);
+    const userId = req.user._id;
+
+    const deleted = await deleteContact(contactId, userId);
 
     if (!deleted) {
       return next(createError(404, 'Contact not found'));
     }
 
-    res.status(204).send();
+    res.status(204).send(); // no content
   } catch (error) {
     next(error);
   }

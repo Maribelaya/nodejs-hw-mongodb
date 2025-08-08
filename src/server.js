@@ -1,7 +1,16 @@
 import express from 'express';
 import cors from 'cors';
 import pino from 'pino-http';
+
+import cookieParser from 'cookie-parser';
+
+const app = express();
+
+app.use(cookieParser());
+
 import contactsRouter from './routers/contacts.js';
+import authRouter from './routers/auth.js'; // ✅ Додано
+
 import { initMongoConnection } from './db/initMongoConnection.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
@@ -10,25 +19,26 @@ export const setupServer = async () => {
   const app = express();
   const PORT = process.env.PORT || 3000;
 
-  //  Middleware
+  // Middleware
   app.use(cors());
   app.use(pino());
   app.use(express.json());
 
   // Routes
   app.use('/contacts', contactsRouter);
+  app.use('/auth', authRouter); // ✅ Додано
 
   app.get('/', (req, res) => {
-    res.send('API is running. Use /contacts');
+    res.send('API is running. Use /contacts or /auth');
   });
 
-  //  404 handler
+  // 404 handler
   app.use(notFoundHandler);
 
-  //  Error handler
+  // Error handler
   app.use(errorHandler);
 
-  //  Запуск сервера
+  // Запуск сервера
   try {
     await initMongoConnection();
     app.listen(PORT, () => {

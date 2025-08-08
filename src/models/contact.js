@@ -1,4 +1,4 @@
-import { model, Schema } from 'mongoose';
+import { Schema, model } from 'mongoose';
 
 const contactsSchema = new Schema(
   {
@@ -20,11 +20,15 @@ const contactsSchema = new Schema(
     },
     contactType: {
       type: String,
-      default: 'personal',
       enum: ['work', 'home', 'personal'],
+      default: 'personal',
+    },
+    userId: {
+      type: String,
     },
   },
   { versionKey: false, timestamps: true },
 );
 
-export default model('Contact', contactsSchema);
+// Створюємо і експортуємо модель
+export const Contact = model('Contact', contactsSchema);

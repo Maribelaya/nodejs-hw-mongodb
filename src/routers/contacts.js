@@ -1,4 +1,5 @@
 import express from 'express';
+import { authenticate } from '../middlewares/authenticate.js';
 import { validateBody } from '../middlewares/validateBody.js';
 import { isValidId } from '../middlewares/isValidId.js';
 import {
@@ -16,6 +17,7 @@ import {
 } from '../controllers/contactsController.js';
 
 const router = express.Router();
+router.use(authenticate);
 
 // Отримати всі контакти з пагінацією та сортуванням
 router.get('/', ctrlWrapper(getContacts));
