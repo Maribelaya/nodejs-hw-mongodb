@@ -24,11 +24,12 @@ const contactsSchema = new Schema(
       default: 'personal',
     },
     userId: {
-      type: String,
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
     },
   },
   { versionKey: false, timestamps: true },
 );
 
-// Створюємо і експортуємо модель
 export const Contact = model('Contact', contactsSchema);
