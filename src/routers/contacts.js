@@ -16,6 +16,8 @@ import {
   deleteContactController,
 } from '../controllers/contactsController.js';
 
+import { upload } from '../middlewares/multer.js';
+
 const router = express.Router();
 router.use(authenticate);
 
@@ -28,6 +30,7 @@ router.get('/:contactId', isValidId, ctrlWrapper(getContactByIdController));
 // Створити новий контакт (валідація body)
 router.post(
   '/',
+  upload.single('photo'),
   validateBody(createContactSchema),
   ctrlWrapper(createContactController),
 );
@@ -36,6 +39,7 @@ router.post(
 router.patch(
   '/:contactId',
   isValidId,
+  upload.single('photo'),
   validateBody(updateContactSchema),
   ctrlWrapper(patchContactController),
 );
