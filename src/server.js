@@ -2,14 +2,17 @@ import express from 'express';
 import cors from 'cors';
 import pino from 'pino-http';
 import cookieParser from 'cookie-parser';
+import swaggerUI from 'swagger-ui-express';
+import fs from 'fs';
+import yaml from 'js-yaml';
+import path from 'path';
 
 import contactsRouter from './routers/contacts.js';
 import authRouter from './routers/auth.js';
 import { initMongoConnection } from './db/initMongoConnection.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
-
-//import multer from 'multer';
+import { swaggerDocs } from './middlewares/swaggerDocs.js';
 
 export const setupServer = async () => {
   const app = express();
@@ -19,8 +22,13 @@ export const setupServer = async () => {
   app.use(cors());
   app.use(pino());
   app.use(express.json());
-  app.use(cookieParser()); // ✅ підключаємо до робочого app
-  //app.use(express.urlencoded({ extended: true }));
+  app.use(cookieParser());
+
+  // Swagger UI
+  const swaggerFilePath = path.join(process.cwd(), 'docs', 'openapi.yaml');
+  const swaggerDocument = yaml.load(fs.readFileSync(swaggerFilePath, 'utf8'));
+  app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
+  app.use('/api-docs', swaggerDocs());
 
   // Routes
   app.use('/contacts', contactsRouter);
@@ -40,6 +48,9 @@ export const setupServer = async () => {
     await initMongoConnection();
     app.listen(PORT, () => {
       console.log(`✅ Server is running on port ${PORT}`);
+      console.log(
+        `📄 Swagger docs available at http://localhost:${PORT}/api-docs`,
+      );
     });
   } catch (error) {
     console.error('❌ Failed to start server:', error.message);

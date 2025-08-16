@@ -1,0 +1,44 @@
+tags:
+  - Contacts
+summary: Get all contacts
+operationId: getContacts
+description: 'Get a list of contacts, supports query parameters for filtering'
+security:
+  - bearerAuth: []
+parameters:
+  - in: query
+    name: page
+    required: false
+    schema:
+      type: integer
+      example: 1
+  - in: query
+    name: limit
+    required: false
+    schema:
+      type: integer
+      example: 20
+responses:
+  '200':
+    description: List of contacts
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - status
+            - message
+            - data
+          properties:
+            status:
+              type: integer
+              example: 200
+            message:
+              type: string
+              example: Contacts retrieved successfully
+            data:
+              type: array
+              items:
+                $ref: '../../components/schemas/contact.yaml'
+  '401':
+    $ref: '../../components/responses/401.yaml'
