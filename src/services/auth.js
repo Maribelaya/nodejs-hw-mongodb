@@ -32,9 +32,7 @@ const createSessionData = () => ({
   refreshTokenValidUntil: new Date(Date.now() + THIRTY_DAYS),
 });
 
-// ------------------------
 // РЕЄСТРАЦІЯ
-// ------------------------
 export const registerUser = async (payload) => {
   const existingUser = await UsersCollection.findOne({ email: payload.email });
   if (existingUser) throw createHttpError(409, 'Email in use');
@@ -47,9 +45,8 @@ export const registerUser = async (payload) => {
   });
 };
 
-// ------------------------
 // ЛОГІН
-// ------------------------
+
 export const loginUser = async ({ email, password }) => {
   const user = await UsersCollection.findOne({ email });
   if (!user) throw createHttpError(404, 'User not found');
@@ -66,16 +63,14 @@ export const loginUser = async ({ email, password }) => {
   });
 };
 
-// ------------------------
 // ВИХІД
-// ------------------------
+
 export const logoutUser = async (sessionId) => {
   await SessionsCollection.deleteOne({ _id: sessionId });
 };
 
-// ------------------------
 // ОНОВЛЕННЯ СЕСІЇ
-// ------------------------
+
 export const refreshUsersSession = async ({ sessionId, refreshToken }) => {
   const session = await SessionsCollection.findOne({
     _id: sessionId,
@@ -95,9 +90,8 @@ export const refreshUsersSession = async ({ sessionId, refreshToken }) => {
   });
 };
 
-// ------------------------
 // НАДІСЛАННЯ EMAIL ДЛЯ СКИДАННЯ ПАРОЛЯ
-// ------------------------
+
 export const sendResetEmailService = async (email) => {
   const user = await UsersCollection.findOne({ email });
   if (!user) throw createHttpError(404, 'User not found!');
@@ -130,9 +124,8 @@ export const sendResetEmailService = async (email) => {
   }
 };
 
-// ------------------------
 // СКИДАННЯ ПАРОЛЯ
-// ------------------------
+
 export const resetPasswordService = async ({ token, password }) => {
   let payload;
   try {
@@ -155,9 +148,8 @@ export const resetPasswordService = async ({ token, password }) => {
   await SessionsCollection.deleteMany({ userId: user._id });
 };
 
-// ------------------------
 // ЛОГІН / РЕЄСТРАЦІЯ ЧЕРЕЗ GOOGLE
-// ------------------------
+
 export const loginOrSignupWithGoogle = async (code) => {
   const googleOAuthClient = await initGoogleOAuthClient();
   const loginTicket = await validateCode(googleOAuthClient, code);
