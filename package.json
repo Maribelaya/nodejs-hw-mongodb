@@ -6,11 +6,11 @@
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
-    "dev": "nodemon src/index.js",
     "lint": "eslint src/**/*.js",
     "build": "npm run build-docs",
     "build-docs": "redocly bundle docs/openapi.yaml --ext json -o docs/swagger.json",
-    "preview-docs": "redocly preview-docs"
+    "preview-docs": "redocly preview-docs",
+    "dev": "npm run build-docs && nodemon src/index.js"
   },
   "keywords": [],
   "author": "MARYNA BIELAIA <MBEL@UKR.NET>",
@@ -33,7 +33,8 @@
     "multer-storage-cloudinary": "^4.0.0",
     "nodemailer": "^7.0.5",
     "pino-http": "^10.5.0",
-    "swagger-ui-express": "^5.0.1"
+    "swagger-ui-express": "^5.0.1",
+    "yaml": "^2.8.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.2.0",
