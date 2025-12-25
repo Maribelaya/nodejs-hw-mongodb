@@ -1,0 +1,76 @@
+# openapi: 3.1.0
+# info:
+#   version: 1.0.0
+#   title: Contacts
+#   license:
+#     name: Apache 2.0
+#     url: http://www.apache.org/licenses/LICENSE-2.0.html
+#   description: This is a documentation of contacts
+# tags:
+#   - name: Contacts
+#     description: Operations about contacts.
+#   - name: Auth
+#     description: Auth operations.
+# servers:
+#   - url: http://localhost:3000
+#   - url: https://hw7-amax.onrender.compaths:
+#   /contacts:
+#     get:
+#       $ref: '../swagger/paths/contacts/get.yaml'
+#     post:
+#       $ref: '../swagger/paths/contacts/post.yaml'
+#   /contacts/{contactId}:
+#     get:
+#       $ref: '../swagger/paths/contacts/{id}/get.yaml'
+#     patch:
+#       $ref: '../swagger/paths/contacts/{id}/patch.yaml'
+#     delete:
+#       $ref: '../swagger/paths/contacts/{id}/delete.yaml'
+
+# components:
+#   securitySchemes:
+#     bearerAuth:
+#       type: http
+#       scheme: bearer
+
+openapi: 3.1.0
+info:
+  version: 1.0.0
+  title: Contacts API
+  description: This is the API documentation for the Contacts application.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+
+tags:
+  - name: Contacts
+    description: Operations about contacts
+  - name: Auth
+    description: Operations about authentication
+
+servers:
+  - url: https://hw7-1-w97s.onrender.com
+    description: Production server (Render)
+  - url: http://localhost:3000
+    description: Local server (development)
+
+paths:
+  /contacts:
+    get:
+      $ref: '../swagger/paths/contacts/get.yaml'
+    post:
+      $ref: '../swagger/paths/contacts/post.yaml'
+  /contacts/{contactId}:
+    get:
+      $ref: '../swagger/paths/contacts/{id}/get.yaml'
+    patch:
+      $ref: '../swagger/paths/contacts/{id}/patch.yaml'
+    delete:
+      $ref: '../swagger/paths/contacts/{id}/delete.yaml'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
