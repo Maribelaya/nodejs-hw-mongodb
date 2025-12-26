@@ -1,14 +1,16 @@
 import express from 'express';
 import cors from 'cors';
 import pino from 'pino-http';
-import contactsRouter from './routes/contacts.js';
+import contactsRouter from './routers/contacts.js';
 import { initMongoConnection } from './db/initMongoConnection.js';
+import { errorHandler } from './middlewares/errorHandler.js';
+import { notFoundHandler } from './middlewares/notFoundHandler.js';
 
 export const setupServer = async () => {
   const app = express();
   const PORT = process.env.PORT || 3000;
 
-  // Middleware
+  //  Middleware
   app.use(cors());
   app.use(pino());
   app.use(express.json());
@@ -16,20 +18,17 @@ export const setupServer = async () => {
   // Routes
   app.use('/contacts', contactsRouter);
 
-  // 404 handler
-  app.use(/(.'*')/, (req, res) => {
-    res.status(404).json({ message: 'Not found' });
+  app.get('/', (req, res) => {
+    res.send('API is running. Use /contacts');
   });
 
-  // Error handler
-  app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).json({
-      message: 'Something went wrong',
-      error: err.message,
-    });
-  });
+  //  404 handler
+  app.use(notFoundHandler);
 
+  //  Error handler
+  app.use(errorHandler);
+
+  //  Запуск сервера
   try {
     await initMongoConnection();
     app.listen(PORT, () => {
